@@ -2,6 +2,7 @@
 from prettytable import PrettyTable
 import codecs
 import json
+from numpy import intersect1d
 
 ACCURACY="accuracy"
 F1_SCORE = "F1-score"
@@ -72,8 +73,26 @@ class QuestionClassifier():
     def is_unanswerable(self, question):
         
         return self._predict_tpye(question) in self.unanswerable
+
+
+
+class TextSimilarity(object):
+    """
+    It measures the similarity between two texts (percentage of words shared
+    between the answer and the span
+    """    
     
     
+    #TODO: This is very basic
+    def similarity(self,tokens1,tokens2):
+        
+        intersect = set(tokens1).intersection(set(tokens2))
+        union = set(tokens1).union(set(tokens2))
+        
+        return len(intersect) / float(len(union))  
+    
+    
+
 class Score(object):
 
     iRIGHT = 0

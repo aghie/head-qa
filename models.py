@@ -1,7 +1,10 @@
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
+from drqa import pipeline
+from drqa.retriever import utils
 from drqa import retriever
 from nltk.corpus import stopwords
+from utils import TextSimilarity
 import logging
 import random
 import itertools
@@ -10,7 +13,10 @@ import numpy as np
 import sys
 import utils
 import codecs
-
+import tempfile
+import subprocess
+import json
+import os
 
 # class VotingAnswerer(object):
 #     
@@ -176,7 +182,7 @@ class WordSimilarityAnswerer(object):
         
         Args
         
-        qas (list). A list of tuples of strings of the form (Q, A1,...,AN)
+        qas (list). A list of tuples of strings of the form (QID, Q, A1,...,AN)
         
         """
         
@@ -247,7 +253,7 @@ class IRAnswerer(object):
         preds = []
         for qid, question, answers in qas:
 
-            unanswerable = True if self.q_classifier is None else self.q_classifier.is_unanswerable(question)
+            unanswerable = False if self.q_classifier is None else self.q_classifier.is_unanswerable(question)
             f = max
             best_answer, best_score = 0,0
             for neg in self.negation_words:
@@ -271,10 +277,84 @@ class IRAnswerer(object):
     
 
 class DrQAAnswerer(object):
+    """
+    A solver that implements a simple wrapper to make predictions using 
+    DrQA (Chen et al. 2017)
+    """
+    NAME = "DrQAAnswerer"
     
-    def __init__(self):
-        pass
+    def __init__(self, batch_size=64):
+        
+        """
+        Args
+        
+        drqa (string): 
+        """
+        
+        self.batch_size = batch_size
+        self.n_docs = 1
+        self.top_n = 1
+        self.drqa = pipeline.DrQA(
+                    reader_model=None,
+                    fixed_candidates=None,
+                    embedding_file=None,
+                    tokenizer=None,
+                    batch_size=batch_size,
+                    cuda=False,
+                    data_parallel=False,
+                    ranker_config={'options': {'tfidf_path': None,
+                                               'strict': False}},
+                    db_config={'options': {'db_path': None}},
+                    num_workers=1,
+                )
+        
     
-    
+    def name(self):
+        return self.NAME
+
     def predict(self, qas):
-        pass
+        """
+        
+        Returns a list of tuples (question_id, right_answer_id)
+        
+        Args
+        
+        qas (list). A list of tuples of strings of the form (QID, Q, A1,...,AN)
+        
+        """        
+
+        preds = []
+        queries = [question for qid, question, answers in qas]   
+        tmp_out = tempfile.NamedTemporaryFile(delete=False)   
+        
+        drqa_answers = []
+        with open(tmp_out.name, 'w') as f:
+            batches = [queries[i: i + self.batch_size]
+                       for i in range(0, len(queries), self.batch_size)]
+            for i, batch in enumerate(batches):
+#                 logger.info(
+#                     '-' * 25 + ' Batch %d/%d ' % (i + 1, len(batches)) + '-' * 25
+#                 )
+                predictions = self.drqa.process_batch(
+                    batch,
+                    n_docs=self.n_docs,
+                    top_n=self.top_n,
+                )
+                drqa_answers.extend([p[0]["span"] for p in predictions])
+        
+        #Compare which answer is the closest one to the DrQA answers
+        assert (len(drqa_answers) == len(qas))
+        ts = TextSimilarity()
+        for pred_answer, (qid,question,answers) in zip(drqa_answers, qas):
+            
+            print (qid,"|",question,"|", answers,"|", pred_answer)
+            similarities = sorted([(idanswer, ts.similarity(pred_answer.split(" "), answer.split(" "))) 
+                                   for idanswer,answer in enumerate(answers,1)], 
+                                   key= lambda x : x[1], reverse=True)
+            
+            preds.append((qid,similarities[0][0]))
+                       
+        return preds                    
+
+        
+        
