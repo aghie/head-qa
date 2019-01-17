@@ -294,6 +294,7 @@ class DrQAAnswerer(object):
         self.batch_size = batch_size
         self.n_docs = 1
         self.top_n = 1
+        self.ts = TextSimilarity()
         self.drqa = pipeline.DrQA(
                     reader_model=None,
                     fixed_candidates=None,
@@ -344,16 +345,11 @@ class DrQAAnswerer(object):
         
         #Compare which answer is the closest one to the DrQA answers
         assert (len(drqa_answers) == len(qas))
-        ts = TextSimilarity()
         for pred_answer, (qid,question,answers) in zip(drqa_answers, qas):
-            
-            print (qid,"|",question,"|", answers,"|", pred_answer)
-            similarities = sorted([(idanswer, ts.similarity(pred_answer.split(" "), answer.split(" "))) 
+            similarities = sorted([(idanswer, self.ts.similarity(pred_answer.split(" "), answer.split(" "))) 
                                    for idanswer,answer in enumerate(answers,1)], 
                                    key= lambda x : x[1], reverse=True)
-            
-            preds.append((qid,similarities[0][0]))
-                       
+            preds.append((qid,similarities[0][0]))                       
         return preds                    
 
         

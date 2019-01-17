@@ -1,9 +1,13 @@
-
+from numpy import intersect1d
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from collections import defaultdict, Counter
 from prettytable import PrettyTable
 import codecs
 import json
-from numpy import intersect1d
+import string
 
+ 
 ACCURACY="accuracy"
 F1_SCORE = "F1-score"
 RECALL = "recall"
@@ -50,10 +54,10 @@ class QuestionClassifier():
                QUESTION_WITH_IMAGE,
                QUESTION_OTHER]
     
-    def __init__(self, unanswerable=[]):
+    def __init__(self, unanswerable=[], neg_words=[]):
         
         self.unanswerable = unanswerable
-    
+        self.neg_words = neg_words
     
     """
     Preditcs the type of question
@@ -82,15 +86,43 @@ class TextSimilarity(object):
     between the answer and the span
     """    
     
+    def __init__(self, stopwords=stopwords.words('english'),
+                 lemmatizer=WordNetLemmatizer()):
+        
+        self.stopwords = stopwords
+        self.lemmatizer = lemmatizer
     
-    #TODO: This is very basic
+    
+    def _preprocess(self, tokens):
+        return  [self.lemmatizer.lemmatize(t).lower() for t in tokens 
+                 if t.lower() not in self.stopwords and t.lower() not in string.punctuation] 
+
+    def _compute_overlap(self,l1, l2):
+        """
+        Computes the percentage of elements of l1 that is in l2
+        
+        Args
+        
+        l1 (list): A list of strings
+        l2 (list): A list of strings
+        """
+        
+        d1 = Counter(l1)
+        d2 = Counter(l2)
+    
+        o1 = 0.
+        for k in d1:
+            o1 += min(d1[k], d2[k])
+
+        return o1 / len(l2)
+  
+
     def similarity(self,tokens1,tokens2):
         
-        intersect = set(tokens1).intersection(set(tokens2))
-        union = set(tokens1).union(set(tokens2))
+        ptokens1 = self._preprocess(tokens1)
+        ptokens2 = self._preprocess(tokens2)   
+        return self._compute_overlap(ptokens1, ptokens2) 
         
-        return len(intersect) / float(len(union))  
-    
     
 
 class Score(object):
@@ -103,13 +135,10 @@ class Score(object):
     iF1 = 5
     iNETAS = 6
 
-    
 
     def __init__(self):
         self.results = {}
         
-        
-
     def parse_eval(self, output_eval):
         
         prec = 0.0
