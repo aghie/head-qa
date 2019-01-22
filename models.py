@@ -332,14 +332,16 @@ class IRAnswerer(Answerer):
         for qid, question, answers in qas:
 
             unanswerable = False if self.qclassifier is None else self.qclassifier.is_unanswerable(question)
-            f = max
-            best_answer, best_score = 0,0
-#             for neg in self.negation_words:
-#                 if neg in question: 
-#                     best_answer, best_score = 0, 100000000
-#                     f = min
-#                     break            
             
+            #If it is a negation question we look for the least similar answer
+            if self.qclassifier.is_negation_question(question):
+                print ("ENTRA negation question", question)
+                best_answer, best_score = 0, 100000000
+                f = min     
+            else:
+                best_answer, best_score = 0,0
+                f = max
+                
             if not unanswerable:
             
                 for aid, answer in enumerate(answers,1):

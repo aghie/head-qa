@@ -187,7 +187,7 @@ class Score(object):
 
     def scores_to_list(self, dscores):
         return list(map(float,[dscores[RIGHT],dscores[WRONG],dscores[UNANSWERED],dscores[PRECISION],
-                dscores[RECALL],dscores[F1_SCORE],dscores[NETAS]]))
+                dscores[RECALL],dscores[F1_SCORE], dscores[ACCURACY], dscores[NETAS]]))
 
     def add_exam(self, exam, scores):
         self.results[exam] = scores
@@ -212,7 +212,7 @@ class Score(object):
 
     def get_table(self):
         table = PrettyTable()
-        table.field_names = ["Exam","Year","Right","Wrong","Unanswered","Precision","Recall","F1-score" , "NETAS"]
+        table.field_names = ["Exam","Year","Right","Wrong","Unanswered","Precision","Recall","F1-score","Accuracy", "NETAS"]
         
         #Computing individual results
         for exam in self.results:
@@ -263,14 +263,14 @@ class Score(object):
         
         return table
 
-    def _metric_to_index(self, metric):
-        if metric == RIGHT: return self.iRIGHT
-        if metric == WRONG: return self.iWRONG
-        if metric == UNANSWERED: return self.iUNANSWERED
-        if metric == PRECISION: return self.iPRECISION
-        if metric == RECALL: return self.iRECALL
-        if metric == F1_SCORE: return self.iF1
-        if metric == NETAS: return self.iNETAS
+#     def _metric_to_index(self, metric):
+#         if metric == RIGHT: return self.iRIGHT
+#         if metric == WRONG: return self.iWRONG
+#         if metric == UNANSWERED: return self.iUNANSWERED
+#         if metric == PRECISION: return self.iPRECISION
+#         if metric == RECALL: return self.iRECALL
+#         if metric == F1_SCORE: return self.iF1
+#         if metric == NETAS: return self.iNETAS
 
 
 class Dataset(object):
