@@ -1,4 +1,6 @@
 from models import RandomAnswerer, LengthAnswerer, IRAnswerer, WordSimilarityAnswerer, DrQAAnswerer, BlindAnswerer
+from spacy.lang.es import Spanish
+from spacy.lang.en import  English
 from utils import *
 from argparse import ArgumentParser
 from subprocess import PIPE,Popen
@@ -10,6 +12,7 @@ import random
 import subprocess
 import configparser
 import utils
+import spacy
 
 
 SPANISH = "es"
@@ -33,6 +36,8 @@ if __name__ == '__main__':
         name_head = "HEAD.json"
         unanswerable_sentences = [utils.BOS_IMAGE_QUESTION_ES]
         neg_words = utils.NEGATION_WORDS_ES
+        nlp = spacy.load('es_core_news_sm') 
+        tokenizer = Spanish().Defaults.create_tokenizer(nlp)
         
     elif config["lang"].lower() == ENGLISH:
         tfidf_retriever = config["en_retriever"]
@@ -41,6 +46,8 @@ if __name__ == '__main__':
         name_head = "HEAD_EN.json"
         unanswerable_sentences = [utils.BOS_IMAGE_QUESTION_EN]
         neg_words = utils.NEGATION_WORDS_EN
+        nlp = spacy.load('es_core_news_sm') 
+        tokenizer = English().Defaults.create_tokenizer(nlp)
       #  embeddings = config["en_embeddings"]
     
     random.seed(17)
@@ -56,11 +63,13 @@ if __name__ == '__main__':
     length_answerer = LengthAnswerer(qclassifier=qclassifier)
     blind_answerer = BlindAnswerer(default=4,qclassifier=qclassifier)
    # word_similarity_answerer = WordSimilarityAnswerer(embeddings, qclassifier=qclassifier)
-   # ir_answerer = IRAnswerer(tfidf_retriever, qclassifier=qclassifier)
+   
+    ir_answerer = IRAnswerer(tfidf_retriever, qclassifier=qclassifier,
+                             use_stopwords=False, tokenizer=tokenizer)
    # drqa_answerer = DrQAAnswerer(qclassifier=qclassifier)
         
     #systems = [drqa_answerer,length_answerer, random_answerer]
-    systems = [blind_answerer]
+    systems = [ir_answerer]
     exams = {f.replace(".json",""):path_head+os.sep+f for f in os.listdir(path_head) if f.endswith(name_head)}
     solutions =  {f.replace(".gold",""):path_head+os.sep+f for f in os.listdir(path_head) if f.endswith(".gold")}
     

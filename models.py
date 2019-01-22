@@ -308,13 +308,23 @@ class IRAnswerer(Answerer):
     NAME = "IRAnswerer"
 
     def __init__(self,tfidf_path,
-                 stopwords =stopwords.words("spanish"),
+                 tokenizer,
+                 use_stopwords = False,
                  qclassifier = None):
         
         Answerer.__init__(self,qclassifier)
+        self.tokenizer = tokenizer
         self.ranker =retriever.get_class('tfidf')(tfidf_path=tfidf_path)
         self.stopwords = stopwords
+        self.use_stopwords = use_stopwords
 
+    def _preprocess(self,query):
+        
+        if self.use_stopwords:
+            return " ".join([token.text for token in list(self.tokenizer(query)) 
+                             if not token.is_stop])
+        else:
+            return " ".join([token.text for token in list(self.tokenizer(query))])            
 
     def name(self):
         return self.NAME
@@ -335,7 +345,6 @@ class IRAnswerer(Answerer):
             
             #If it is a negation question we look for the least similar answer
             if self.qclassifier.is_negation_question(question):
-                print ("ENTRA negation question", question)
                 best_answer, best_score = 0, 100000000
                 f = min     
             else:
@@ -343,7 +352,9 @@ class IRAnswerer(Answerer):
                 f = max
                 
             if not unanswerable:
-            
+
+                question = self._preprocess(question)
+
                 for aid, answer in enumerate(answers,1):
                     name, score = self._process(" ".join([question, answer]), k=1)[0]   
                     if f == max and score > best_score:
