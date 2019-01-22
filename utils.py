@@ -79,7 +79,7 @@ class QuestionClassifier():
     def is_unanswerable(self, question):    
         return self._predict_type(question) in [self.QUESTION_WITH_IMAGE]
     
-    def is_reversed_score(self, question):
+    def is_negation_question(self, question):
         return self._predict_type(question) == self.QUESTION_WITH_NEGATION
 
 
@@ -212,7 +212,7 @@ class Score(object):
 
     def get_table(self):
         table = PrettyTable()
-        table.field_names = ["Exam","Year","Right","Wrong","Unanswered","Precision","Recall","F1-score", "NETAS"]
+        table.field_names = ["Exam","Year","Right","Wrong","Unanswered","Precision","Recall","F1-score" , "NETAS"]
         
         #Computing individual results
         for exam in self.results:

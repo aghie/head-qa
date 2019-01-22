@@ -45,12 +45,12 @@ if __name__ == '__main__':
     
     random.seed(17)
     unanswerable = []
-    neg_words = []
-#     qclassifier = QuestionClassifier(unanswerable= unanswerable_sentences, 
-#                                      neg_words = neg_words)    
+   # neg_words = []
+    qclassifier = QuestionClassifier(unanswerable= unanswerable_sentences, 
+                                     neg_words = neg_words)    
     
-    qclassifier = QuestionClassifier(unanswerable= [], 
-                                     neg_words = [])    
+#     qclassifier = QuestionClassifier(unanswerable= [], 
+#                                      neg_words = [])    
     
     random_answerer = RandomAnswerer(qclassifier=qclassifier)
     length_answerer = LengthAnswerer(qclassifier=qclassifier)
