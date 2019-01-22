@@ -17,6 +17,8 @@ import tempfile
 import subprocess
 import json
 import os
+import abc
+
 
 # class VotingAnswerer(object):
 #     
@@ -48,7 +50,42 @@ import os
 
 
 
-class LengthAnswerer(object):
+class Answerer(object):
+
+    def __init__(self,qclassifier):   
+        self.qclassifier = qclassifier
+
+    def predict(self, qas):   
+        
+
+        not_to_answer = self.not_to_answer(qas)     
+        predictions = self._predict(qas)
+        for qid in not_to_answer:
+            predictions[qid] = utils.ID_UNANSWERED
+            print ("ENTRA")
+            print (predictions)
+        
+        return predictions    
+        
+            
+    def not_to_answer(self, qas):
+        
+        unanswerable = []
+        for qid, question, answers in qas:
+            if self.qclassifier.is_unanswerable(question):
+                unanswerable.append(qid)
+        return unanswerable    
+        
+
+    @abc.abstractmethod
+    def _predict(self, qas):
+        pass
+
+
+
+
+
+class LengthAnswerer(Answerer):
     """
     A solver that selects as the right answer the longest one
     """
@@ -57,7 +94,8 @@ class LengthAnswerer(object):
     MAX_CRITERIA = "max"
     MIN_CRITERIA = "min"
     
-    def __init__(self, criteria=MAX_CRITERIA,count_words=False):
+    def __init__(self, criteria=MAX_CRITERIA,count_words=False,
+                 qclassifier=None):
         """
         
         Args
@@ -68,7 +106,8 @@ class LengthAnswerer(object):
         Otherwise we simply count the length of the string
         
         """
-        
+
+        Answerer.__init__(self,qclassifier)
         self.count_words = count_words
         
         if criteria.lower() == self.MAX_CRITERIA:
@@ -77,11 +116,12 @@ class LengthAnswerer(object):
             self.criteria = min
         else:
             raise NotImplementedError
+      
     
     def name(self):
         return self.NAME
     
-    def predict(self, qas):
+    def _predict(self, qas):
         """
         
         Returns a list of tuples (question_id, right_answer_id)
@@ -91,8 +131,7 @@ class LengthAnswerer(object):
         qas (list). A list of tuples of strings of the form (Q, A1,...,AN)
         
         """
-        
-        preds = []
+        preds = {}
         for qid, question, answers in qas:
             
             if not self.count_words:
@@ -101,24 +140,28 @@ class LengthAnswerer(object):
             else:
                 answer_lengths = list(map(len, [a.split() for a in answers]))
                 pred = answer_lengths.index(self.criteria(answer_lengths))+1
-            preds.append((qid, pred))
+            preds[qid] = pred
         return preds
 
+    def __str__(self):
+        return self.NAME
+    
 
-class RandomAnswerer(object):
+
+class RandomAnswerer(Answerer):
     """
     A solver that select as the right answer a random one
     """
 
     NAME = "RandomAnswerer"
     
-#     def __init__(self):
-#         self.question_classifier = utils.QuestionClassifier()
+    def __init__(self, qclassifier=None):
+        Answerer.__init__(self,qclassifier)
 
     def name(self):
         return self.NAME
 
-    def predict(self, qas):        
+    def _predict(self, qas):        
         """
         
         Returns a list of tuples (question_id, right_answer_id)
@@ -129,14 +172,54 @@ class RandomAnswerer(object):
         
         """
         
-        preds = []
+        preds = {}
         for qid, question, answers in qas:
-            preds.append((qid,random.randint(1,len(answers))))
+            preds[qid] = random.randint(1,len(answers))
         return preds
 
+    def __str__(self):
+        return self.NAME
+    
+    
+class BlindAnswerer(Answerer):
+    
+    NAME = "BlindAnswerer"
+    
+    
+    def __init__(self, default, qclassifier=None):
+        
+        Answerer.__init__(self,qclassifier)
+        self.default = default
+
+    def name(self):
+        return self.NAME+"-"+str(self.default)
+
+    def _predict(self, qas):        
+        """
+        
+        Returns a list of tuples (question_id, right_answer_id)
+        
+        Args
+        
+        qas (list). A list of tuples of strings of the form (Q, A1,...,AN)
+        
+        """
+        
+        preds = {}
+        for qid, question, answers in qas:
+            if self.default in range(1,len(answers)+1):
+                preds[qid] = self.default
+            else:
+                raise ValueError("The answer ID",self.default,"is not available in options 1 to ", len(answers))
+        return preds    
+
+    def __str__(self):
+        return self.NAME+"-"+str(self.default)
+    
 
 
-class WordSimilarityAnswerer(object):
+
+class WordSimilarityAnswerer(Answerer):
     """
     This solver: (1) computes a question vector by summing the individual embeddings
     of its words (2) repeats the same process for each answer and (3) chooses as the right
@@ -145,7 +228,7 @@ class WordSimilarityAnswerer(object):
 
     NAME = "WordSimilarityAnswerer"
 
-    def __init__(self, path_word_emb):
+    def __init__(self, path_word_emb, qclassifier):
         
         """
         
@@ -154,8 +237,8 @@ class WordSimilarityAnswerer(object):
         path_word_emb (string): Path to the embeddings file
         """
         
+        Answerer.__init__(self,qclassifier)
         self.word2index = {}
-        
         with codecs.open(path_word_emb) as f:
             self.n_words, self.embedding_size = tuple(map(int,f.readline().strip("\n").split()))
             self.word_embeddings = np.zeros(shape=(self.n_words,self.embedding_size), 
@@ -175,7 +258,7 @@ class WordSimilarityAnswerer(object):
     def name(self):
         return self.NAME
 
-    def predict(self,qas):
+    def _predict(self,qas):
         """
         
         Returns a list of tuples (question_id, right_answer_id)
@@ -186,7 +269,7 @@ class WordSimilarityAnswerer(object):
         
         """
         
-        preds = []
+        preds = {}
         for qid, question, answers in qas:
         
             question_word_embs = [self.word_embeddings[self.word2index[word]] 
@@ -205,12 +288,15 @@ class WordSimilarityAnswerer(object):
                 if score > best_score:
                     best_answer,best_score = aid, score             
                 
-            preds.append((qid,best_answer))
+            preds[qid] = best_answer
         return preds
 
+    def __str__(self):
+        return self.NAME
+    
 
 
-class IRAnswerer(object):
+class IRAnswerer(Answerer):
     
     """
     A solver that select as the right answer the answer that maximized
@@ -226,16 +312,17 @@ class IRAnswerer(object):
 
     def __init__(self,tfidf_path, always_answer=False, 
                  stopwords =stopwords.words("spanish"),
-                 negation_words= utils.NEGATION_WORDS,
+               #  negation_words= utils.NEGATION_WORDS,
                  q_classifier = None):
         
+        Answerer.__init__(self,qclassifier)
         self.ranker =retriever.get_class('tfidf')(tfidf_path=tfidf_path)
         #self.doc_retriever = retriever.DocDB(db_path=db_path)
         #self.doc_retriever = retriever.DocDB(db_path="/tmp/dumb_json_example2.db")
         self.always_answer = always_answer
         self.stopwords = stopwords
-        self.negation_words = negation_words
-        self.q_classifier = q_classifier
+      #  self.negation_words = negation_words
+    
 
     def name(self):
         return self.NAME
@@ -249,18 +336,18 @@ class IRAnswerer(object):
         return results
 
 
-    def predict(self,qas):
-        preds = []
+    def _predict(self,qas):
+        preds = {}
         for qid, question, answers in qas:
 
             unanswerable = False if self.q_classifier is None else self.q_classifier.is_unanswerable(question)
             f = max
             best_answer, best_score = 0,0
-            for neg in self.negation_words:
-                if neg in question: 
-                    best_answer, best_score = 0, 100000000
-                    f = min
-                    break            
+#             for neg in self.negation_words:
+#                 if neg in question: 
+#                     best_answer, best_score = 0, 100000000
+#                     f = min
+#                     break            
             
             if not unanswerable:
             
@@ -271,19 +358,23 @@ class IRAnswerer(object):
                     elif f == min and score < best_score:
                         best_answer,best_score = aid, score
                 
-            preds.append((qid,best_answer))
-
+            preds[qid] = best_answer
+        
         return preds
-    
 
-class DrQAAnswerer(object):
+    def __str__(self):
+        return self.NAME
+        
+
+
+class DrQAAnswerer(Answerer):
     """
     A solver that implements a simple wrapper to make predictions using 
     DrQA (Chen et al. 2017)
     """
     NAME = "DrQAAnswerer"
     
-    def __init__(self, batch_size=64):
+    def __init__(self, batch_size=64, qclassifier=None):
         
         """
         Args
@@ -291,6 +382,7 @@ class DrQAAnswerer(object):
         drqa (string): 
         """
         
+        Answerer.__init__(self,qclassifier)
         self.batch_size = batch_size
         self.n_docs = 1
         self.top_n = 1
@@ -308,12 +400,13 @@ class DrQAAnswerer(object):
                     db_config={'options': {'db_path': None}},
                     num_workers=1,
                 )
+
         
     
     def name(self):
         return self.NAME
 
-    def predict(self, qas):
+    def _predict(self, qas):
         """
         
         Returns a list of tuples (question_id, right_answer_id)
@@ -324,7 +417,8 @@ class DrQAAnswerer(object):
         
         """        
 
-        preds = []
+        preds = {}
+        #preds = []
         queries = [question for qid, question, answers in qas]   
         tmp_out = tempfile.NamedTemporaryFile(delete=False)   
         
@@ -349,8 +443,13 @@ class DrQAAnswerer(object):
             similarities = sorted([(idanswer, self.ts.similarity(pred_answer.split(" "), answer.split(" "))) 
                                    for idanswer,answer in enumerate(answers,1)], 
                                    key= lambda x : x[1], reverse=True)
-            preds.append((qid,similarities[0][0]))                       
+            preds[qid] = similarities[0][0] 
         return preds                    
 
+
+    def __str__(self):
+        return self.NAME
+    
         
+
         

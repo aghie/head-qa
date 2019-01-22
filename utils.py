@@ -16,9 +16,11 @@ RIGHT="right"
 WRONG="wrong"
 UNANSWERED="unanswered"
 NETAS="netas"
-NEGATION_WORDS = ["NO","FALSA","INCORRECTA","FALSO","INCORRECTO","MENOR","MENOS"]
-BOS_IMAGE_QUESTION = "Pregunta vinculada a la imagen"
-
+NEGATION_WORDS_ES = ["NO","FALSA","INCORRECTA","FALSO","INCORRECTO","MENOR","MENOS"]
+NEGATION_WORDS_EN = ["NO", "FALSE", "INCORRECT", "LESS"]
+BOS_IMAGE_QUESTION_ES = "Pregunta vinculada a la imagen"
+BOS_IMAGE_QUESTION_EN = "Question linked to image"
+ID_UNANSWERED = 0
 
 def config_file_to_dict(input_file):
     config = {}
@@ -62,21 +64,23 @@ class QuestionClassifier():
     """
     Preditcs the type of question
     """
-    def _predict_tpye(self, question):
+    def _predict_type(self, question):
         
-        if question.startswith(BOS_IMAGE_QUESTION):
-            return self.QUESTION_WITH_IMAGE
+        for unans in self.unanswerable:
+            if question.startswith(unans):
+                return self.QUESTION_WITH_IMAGE
         
-        for negation in NEGATION_WORDS:
+        for negation in self.neg_words:
             if negation in question:
                 return self.QUESTION_WITH_NEGATION
         
         return self.QUESTION_OTHER
             
-        
-    def is_unanswerable(self, question):
-        
-        return self._predict_tpye(question) in self.unanswerable
+    def is_unanswerable(self, question):    
+        return self._predict_type(question) in [self.QUESTION_WITH_IMAGE]
+    
+    def is_reversed_score(self, question):
+        return self._predict_type(question) == self.QUESTION_WITH_NEGATION
 
 
 
@@ -114,6 +118,8 @@ class TextSimilarity(object):
         for k in d1:
             o1 += min(d1[k], d2[k])
 
+        if len(l2) == 0:
+            return 0
         return o1 / len(l2)
   
 
