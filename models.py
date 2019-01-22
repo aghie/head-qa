@@ -57,13 +57,10 @@ class Answerer(object):
 
     def predict(self, qas):   
         
-
         not_to_answer = self.not_to_answer(qas)     
         predictions = self._predict(qas)
         for qid in not_to_answer:
             predictions[qid] = utils.ID_UNANSWERED
-            print ("ENTRA")
-            print (predictions)
         
         return predictions    
         
@@ -310,26 +307,20 @@ class IRAnswerer(Answerer):
     
     NAME = "IRAnswerer"
 
-    def __init__(self,tfidf_path, always_answer=False, 
+    def __init__(self,tfidf_path,
                  stopwords =stopwords.words("spanish"),
-               #  negation_words= utils.NEGATION_WORDS,
-                 q_classifier = None):
+                 qclassifier = None):
         
         Answerer.__init__(self,qclassifier)
         self.ranker =retriever.get_class('tfidf')(tfidf_path=tfidf_path)
-        #self.doc_retriever = retriever.DocDB(db_path=db_path)
-        #self.doc_retriever = retriever.DocDB(db_path="/tmp/dumb_json_example2.db")
-        self.always_answer = always_answer
         self.stopwords = stopwords
-      #  self.negation_words = negation_words
-    
+
 
     def name(self):
         return self.NAME
 
     def _process(self,query, k=1):
         doc_names, doc_scores = self.ranker.closest_docs(query, k)
-       # print (doc_names, doc_scores)
         results = []
         for i in range(len(doc_names)):
             results.append((doc_names[i], doc_scores[i]))
@@ -340,7 +331,7 @@ class IRAnswerer(Answerer):
         preds = {}
         for qid, question, answers in qas:
 
-            unanswerable = False if self.q_classifier is None else self.q_classifier.is_unanswerable(question)
+            unanswerable = False if self.qclassifier is None else self.qclassifier.is_unanswerable(question)
             f = max
             best_answer, best_score = 0,0
 #             for neg in self.negation_words:

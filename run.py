@@ -56,11 +56,11 @@ if __name__ == '__main__':
     length_answerer = LengthAnswerer(qclassifier=qclassifier)
     blind_answerer = BlindAnswerer(default=1,qclassifier=qclassifier)
    # word_similarity_answerer = WordSimilarityAnswerer(embeddings, qclassifier=qclassifier)
-   # ir_answerer = IRAnswerer(tfidf_retriever, qclassifier=qclassifier)
+    ir_answerer = IRAnswerer(tfidf_retriever, qclassifier=qclassifier)
    # drqa_answerer = DrQAAnswerer(qclassifier=qclassifier)
         
     #systems = [drqa_answerer,length_answerer, random_answerer]
-    systems = [random_answerer]
+    systems = [ir_answerer]
     exams = {f.replace(".json",""):path_head+os.sep+f for f in os.listdir(path_head) if f.endswith(name_head)}
     solutions =  {f.replace(".gold",""):path_head+os.sep+f for f in os.listdir(path_head) if f.endswith(".gold")}
     
