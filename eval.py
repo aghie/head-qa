@@ -15,7 +15,6 @@ def netas_score(gold, predicted, avg_10best_scores=574.7):
         raise ValueError("The gold and predicted vector must have the same length")
     else:
         for g, p in zip(gold, predicted):
-       #     print (g,p, type(g), type(p))
             if g == p: 
                 right+=1
                 brutas_score+=3
@@ -49,12 +48,10 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
     with codecs.open(args.gold) as f_gold:
         gold = f_gold.readlines()
-        #y_gold = [int(e.split()[1].strip()) for e in gold]
         y_gold = [e.split()[1].strip() for e in gold]
         
     with codecs.open(args.predicted) as f_predicted:
         predicted = f_predicted.readlines()
-        #y_predicted =  [int(e.split()[1].strip()) for e in predicted]
         y_predicted =  [e.split()[1].strip() for e in predicted]
     
     p,r,f1,_ = precision_recall_fscore_support(y_gold, y_predicted, average='macro')
@@ -67,14 +64,6 @@ if __name__ == '__main__':
     print (WRONG, wrong)
     print (UNANSWERED, unanswered)
     print (NETAS, net )
-#     print ("y_gold (1)", y_gold.count(1))
-#     print ("y_gold (2)", y_gold.count(2))
-#     print ("y_gold (3)", y_gold.count(3))
-#     print ("y_gold (4)", y_gold.count(4))
-#     print ("y_gold (5)", y_gold.count(5))
-#     print ("y_gold", y_gold)
-#     print ("y_predicted", y_predicted)
-#     print ()
-#     print ("Per class",precision_recall_fscore_support(y_gold, y_predicted, average=None,labels=[1, 2, 3, 4, 5]))
+
     
     
