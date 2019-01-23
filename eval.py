@@ -5,7 +5,6 @@ from argparse import ArgumentParser
 import codecs
 
 
-
 def netas_score(gold, predicted, avg_10best_scores=574.7):
     
     right = 0
@@ -50,11 +49,13 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
     with codecs.open(args.gold) as f_gold:
         gold = f_gold.readlines()
-        y_gold = [int(e.split()[1].strip()) for e in gold]
+        #y_gold = [int(e.split()[1].strip()) for e in gold]
+        y_gold = [e.split()[1].strip() for e in gold]
         
     with codecs.open(args.predicted) as f_predicted:
         predicted = f_predicted.readlines()
-        y_predicted =  [int(e.split()[1].strip()) for e in predicted]
+        #y_predicted =  [int(e.split()[1].strip()) for e in predicted]
+        y_predicted =  [e.split()[1].strip() for e in predicted]
     
     p,r,f1,_ = precision_recall_fscore_support(y_gold, y_predicted, average='macro')
     net,right,wrong,unanswered = netas_score(y_gold,y_predicted)

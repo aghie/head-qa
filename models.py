@@ -69,7 +69,7 @@ class Answerer(object):
         
         unanswerable = []
         for qid, question, answers in qas:
-            if self.qclassifier.is_unanswerable(question):
+            if self.qclassifier is not None and self.qclassifier.is_unanswerable(question):
                 unanswerable.append(qid)
         return unanswerable    
         
