@@ -19,9 +19,6 @@ if __name__ == '__main__':
     dataset = Dataset()
     dataset.load_json(args.input)
     exams = dataset.get_exams()
-    
-   # dARC = OrderedDict()
-   
     name_head = args.input.rsplit("/",1)[1].replace(".json","")
     
     with codecs.open(args.output+os.sep+name_head+".arc.txt","w") as f:         
