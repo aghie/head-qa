@@ -263,16 +263,6 @@ class Score(object):
         
         return table
 
-#     def _metric_to_index(self, metric):
-#         if metric == RIGHT: return self.iRIGHT
-#         if metric == WRONG: return self.iWRONG
-#         if metric == UNANSWERED: return self.iUNANSWERED
-#         if metric == PRECISION: return self.iPRECISION
-#         if metric == RECALL: return self.iRECALL
-#         if metric == F1_SCORE: return self.iF1
-#         if metric == NETAS: return self.iNETAS
-
-
 class Dataset(object):
     
     DATA = "data"
@@ -297,12 +287,6 @@ class Dataset(object):
     
     def get_json(self):
         return self.json
-    
-#     def get_data(self):
-#         if self.json is None:
-#             raise ValueError("Dataset not provided")
-#         
-#         return self.json[self.DATA]
     
     def get_qas(self, exam):
         qas = []
