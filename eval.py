@@ -1,9 +1,10 @@
-from utils import F1_SCORE, RECALL, PRECISION,ACCURACY, NETAS, RIGHT, WRONG, UNANSWERED
+from utils import F1_SCORE, RECALL, PRECISION,ACCURACY, NETAS, RIGHT, WRONG, UNANSWERED, ID_UNANSWERED
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score
 from argparse import ArgumentParser
 import codecs
-
+import warnings
+warnings.filterwarnings('ignore')  
 
 def netas_score(gold, predicted, avg_10best_scores=574.7):
     
@@ -18,7 +19,7 @@ def netas_score(gold, predicted, avg_10best_scores=574.7):
             if g == p: 
                 right+=1
                 brutas_score+=3
-            elif p != 0: 
+            elif p != ID_UNANSWERED: 
                 brutas_score-=1
                 wrong+=1
             else:

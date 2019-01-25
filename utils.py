@@ -20,7 +20,7 @@ NEGATION_WORDS_ES = ["NO","FALSA","INCORRECTA","FALSO","INCORRECTO","MENOR","MEN
 NEGATION_WORDS_EN = ["NO", "FALSE", "INCORRECT", "LESS"]
 BOS_IMAGE_QUESTION_ES = "Pregunta vinculada a la imagen"
 BOS_IMAGE_QUESTION_EN = "Question linked to image"
-ID_UNANSWERED = 0
+ID_UNANSWERED = "-"
 
 def config_file_to_dict(input_file):
     config = {}

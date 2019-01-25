@@ -61,7 +61,7 @@ class Answerer(object):
         predictions = self._predict(qas)
         for qid in not_to_answer:
             predictions[qid] = utils.ID_UNANSWERED
-        
+    
         return predictions    
         
             
