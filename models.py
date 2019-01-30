@@ -79,9 +79,6 @@ class Answerer(object):
         pass
 
 
-
-
-
 class LengthAnswerer(Answerer):
     """
     A solver that selects as the right answer the longest one
@@ -378,7 +375,7 @@ class DrQAAnswerer(Answerer):
     """
     NAME = "DrQAAnswerer"
     
-    def __init__(self, batch_size=64, qclassifier=None):
+    def __init__(self, tokenizer, batch_size=64, qclassifier=None):
         
         """
         Args
@@ -386,6 +383,7 @@ class DrQAAnswerer(Answerer):
         drqa (string): 
         """
         
+        print ("Tokenizer", tokenizer)
         Answerer.__init__(self,qclassifier)
         self.batch_size = batch_size
         self.n_docs = 1
@@ -395,7 +393,7 @@ class DrQAAnswerer(Answerer):
                     reader_model=None,
                     fixed_candidates=None,
                     embedding_file=None,
-                    tokenizer=None,
+                    tokenizer="spacy",
                     batch_size=batch_size,
                     cuda=False,
                     data_parallel=False,

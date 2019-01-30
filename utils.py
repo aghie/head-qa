@@ -256,6 +256,13 @@ class Score(object):
             psycho_row.extend(psycho_scores)
             table.add_row(psycho_row)
         
+        chemistry_exams = self.get_category_scores("_Q")
+        if len(chemistry_exams) != 0:
+            chemistry_scores = self.get_average_results(chemistry_exams)
+            chemistry_row = ["Chemistry (avg)", ""]
+            chemistry_row.extend(chemistry_scores)
+            table.add_row(chemistry_row)
+        
         all_scores = self.get_average_results([self.results[exam] for exam in self.results])
         all_row = ["All (avg)", ""]
         all_row.extend(all_scores)

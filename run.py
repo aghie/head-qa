@@ -48,7 +48,7 @@ if __name__ == '__main__':
         path_head =config["en_head"]
         unanswerable_sentences = [utils.BOS_IMAGE_QUESTION_EN]
         neg_words = utils.NEGATION_WORDS_EN
-        nlp = en_core_web_sm.load() 
+        nlp = spacy.load('en_core_web_sm')
         tokenizer = English().Defaults.create_tokenizer(nlp)
 
     else:
@@ -80,7 +80,8 @@ if __name__ == '__main__':
         answerer =  IRAnswerer(tfidf_retriever, qclassifier=qclassifier,
                                use_stopwords=False, tokenizer=tokenizer)
     elif args.answerer.lower() == "drqa":
-        answerer =  DrQAAnswerer(qclassifier=qclassifier)
+        answerer =  DrQAAnswerer(tokenizer=tokenizer,
+                                 qclassifier=qclassifier)
     else:
         raise NotImplementedError("Answerer", args.answerer," is not available")
     
