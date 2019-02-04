@@ -375,7 +375,8 @@ class DrQAAnswerer(Answerer):
     """
     NAME = "DrQAAnswerer"
     
-    def __init__(self, tokenizer, batch_size=64, qclassifier=None):
+    def __init__(self, tokenizer, reader_model=None, batch_size=64, 
+                 qclassifier=None, cuda=False):
         
         """
         Args
@@ -386,16 +387,17 @@ class DrQAAnswerer(Answerer):
         print ("Tokenizer", tokenizer)
         Answerer.__init__(self,qclassifier)
         self.batch_size = batch_size
-        self.n_docs = 1
+        self.n_docs = 5
         self.top_n = 1
         self.ts = TextSimilarity()
+        print ("Reader model", reader_model, cuda)
         self.drqa = pipeline.DrQA(
-                    reader_model=None,
+                    reader_model=reader_model,
                     fixed_candidates=None,
                     embedding_file=None,
                     tokenizer="spacy",
                     batch_size=batch_size,
-                    cuda=False,
+                    cuda=cuda,
                     data_parallel=False,
                     ranker_config={'options': {'tfidf_path': None,
                                                'strict': False}},
@@ -437,6 +439,10 @@ class DrQAAnswerer(Answerer):
                     n_docs=self.n_docs,
                     top_n=self.top_n,
                 )
+#                for ebatch, epred in zip(batch,predictions):
+#                    print ("batch element", ebatch.encode("utf-8"))
+#                    print ("predictions element", epred)
+#                input("NEXT")
                 drqa_answers.extend([p[0]["span"] for p in predictions])
         
         #Compare which answer is the closest one to the DrQA answers

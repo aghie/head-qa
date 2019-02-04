@@ -50,6 +50,7 @@ if __name__ == '__main__':
         neg_words = utils.NEGATION_WORDS_EN
         nlp = spacy.load('en_core_web_sm')
         tokenizer = English().Defaults.create_tokenizer(nlp)
+        drqa_reader_model = config["en_drqa_reader_model"]
 
     else:
         raise NotImplementedError
@@ -81,7 +82,9 @@ if __name__ == '__main__':
                                use_stopwords=False, tokenizer=tokenizer)
     elif args.answerer.lower() == "drqa":
         answerer =  DrQAAnswerer(tokenizer=tokenizer,
-                                 qclassifier=qclassifier)
+                                 reader_model=drqa_reader_model,
+                                 qclassifier=qclassifier,
+                                 cuda=True)
     else:
         raise NotImplementedError("Answerer", args.answerer," is not available")
     
