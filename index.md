@@ -11,7 +11,6 @@
 
 
 
-### <center>A Healthcare Dataset for Complex Reasoning</center>
 
 ![](https://cdn.pixabay.com/photo/2016/11/09/16/24/virus-1812092_960_720.jpg)
 
