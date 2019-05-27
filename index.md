@@ -30,9 +30,9 @@ HEAD-QA tries to make these questions accesible for the Natural Language Process
 
 ### Download
 
-ES_HEAD dataset (to be released)
+[ES_HEAD dataset](https://drive.google.com/open?id=1dUIqVwvoZAtbX_-z5axCoe97XNcFo1No)
 
-EN_HEAD dataset (to be released)
+[EN_HEAD dataset](https://drive.google.com/open?id=1phryJg4FjCFkn0mSCqIOP2-FscAeKGV0)
 
 HEAD-QA paper (to be released)
 
