@@ -22,6 +22,8 @@ HEAD-QA tries to make these questions accesible for the Natural Language Process
 
 [EN_HEAD dataset](https://drive.google.com/open?id=1phryJg4FjCFkn0mSCqIOP2-FscAeKGV0)
 
+[Data (images, pdfs, etc)](https://drive.google.com/open?id=1a_95N5zQQoUCq8IBNVZgziHbeM-QxG2t)
+
 HEAD-QA paper (to be released)
 
 ### Examples
