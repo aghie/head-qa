@@ -127,6 +127,8 @@ class TextSimilarity(object):
         
         ptokens1 = self._preprocess(tokens1)
         ptokens2 = self._preprocess(tokens2)   
+    #    print ("ptokens1", ptokens1)
+    #    print ("ptokens2", ptokens2)
         return self._compute_overlap(ptokens1, ptokens2) 
         
     

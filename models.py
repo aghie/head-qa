@@ -422,7 +422,6 @@ class DrQAAnswerer(Answerer):
         """        
 
         preds = {}
-        #preds = []
         queries = [question for qid, question, answers in qas]   
         tmp_out = tempfile.NamedTemporaryFile(delete=False)   
         
@@ -431,27 +430,43 @@ class DrQAAnswerer(Answerer):
             batches = [queries[i: i + self.batch_size]
                        for i in range(0, len(queries), self.batch_size)]
             for i, batch in enumerate(batches):
-#                 logger.info(
-#                     '-' * 25 + ' Batch %d/%d ' % (i + 1, len(batches)) + '-' * 25
-#                 )
+
                 predictions = self.drqa.process_batch(
                     batch,
                     n_docs=self.n_docs,
                     top_n=self.top_n,
                 )
-#                for ebatch, epred in zip(batch,predictions):
-#                    print ("batch element", ebatch.encode("utf-8"))
-#                    print ("predictions element", epred)
-#                input("NEXT")
+
                 drqa_answers.extend([p[0]["span"] for p in predictions])
         
         #Compare which answer is the closest one to the DrQA answers
         assert (len(drqa_answers) == len(qas))
         for pred_answer, (qid,question,answers) in zip(drqa_answers, qas):
+#             if self.qclassifier.is_negation_question(question):
+#                 best_answer, best_score = 0, 100000000
+#                 f = min     
+#             else:
+#                 best_answer, best_score = 0,0
+#                 f = max
             similarities = sorted([(idanswer, self.ts.similarity(pred_answer.split(" "), answer.split(" "))) 
                                    for idanswer,answer in enumerate(answers,1)], 
                                    key= lambda x : x[1], reverse=True)
-            preds[qid] = similarities[0][0] 
+            
+            #No question scored We select the longest answer instead
+            if similarities[0][1] == 0:
+                length_answers = [(ida,len(a)) for ida, a in enumerate(answers,1)]
+           #     print ("length answers before", length_answers)
+                length_answers = sorted(length_answers, key = lambda a: a[1], reverse=True)
+           #     print ("length answers after", length_answers)
+                preds[qid] = length_answers[0][0] #random.randint(1,len(answers))
+           #     print ("selected answer", preds[qid])
+           #     input("NEXT")
+            else:
+                if self.qclassifier.is_negation_question(question):
+                    preds[qid] = similarities[-1][0] 
+                else:
+                    preds[qid] = similarities[0][0] 
+                
         return preds                    
 
 
