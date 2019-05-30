@@ -12,7 +12,7 @@ if __name__ == '__main__':
     arg_parser.add_argument("--input", dest="input", 
                             help="Path to the HEAD dataset", default=None)
     arg_parser.add_argument("--output", dest="output", 
-                            help="Path to the output directory where to store the exams in a suitable format for DrQa")
+                            help="Path to the output directory where to store the exams in a suitable format for the ARC solvers")
     
     args = arg_parser.parse_args()
     
