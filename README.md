@@ -6,7 +6,7 @@ HEAD-QA is a multi-choice **HEA**lthcare **D**ataset. The questions come from ex
 
 > Date of the last update of the documents object of the reuse: January, 14th, 2019.
 
-HEAD-QA tries to make these questions accesible for the Natural Language Processing community. We hope it is an useful resource towards achieving better QA systems. The dataset contains questions about the following topics:
+HEAD-QA tries to make these questions accessible for the Natural Language Processing community. We hope it is an useful resource towards achieving better QA systems. The dataset contains questions about the following topics:
 
 - Medicine.
 - Nursing.
@@ -49,7 +49,7 @@ Each dataset contains:
 - HEAD[_EN].json -> It contains the whole data for HEAD-QA (used in the so-called 'unsupervised' setting).
 - train_HEAD[\_EN].json -> It contains the training set of HEAD-QA (used as the training set in the so-called 'supervised' setting) 
 - dev_HEAD[\_EN].json -> A json file containing the development set of HEAD-QA (used in the 'supervised' setting).
-- test_HEAD[\_EN].json -> A json file ctaining the test set of HEAD-QA (used in the 'supervised' setting).
+- test_HEAD[\_EN].json -> A json file containing the test set of HEAD-QA (used in the 'supervised' setting).
 
 [Data (images, pdfs, etc)](https://drive.google.com/open?id=1a_95N5zQQoUCq8IBNVZgziHbeM-QxG2t). Note that these are medical images and some of them might have sensitive content.
 
@@ -190,4 +190,4 @@ We also had problems ruuning the dgem baseline. The default torch version that i
 
 ### References
 
-Vilares, David and Gómez-Rodríguez, Carlos. HEAD-QA: A Healthcare Dataset for Complex Reasoning", to appear, ACL 2019.
+Vilares, David and Gómez-Rodríguez, Carlos. "HEAD-QA: A Healthcare Dataset for Complex Reasoning", to appear, ACL 2019.
