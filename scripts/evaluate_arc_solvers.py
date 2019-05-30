@@ -59,44 +59,50 @@ def _select_answer(line_json):
     selected_answers = line_json["selected_answers"].split(",")
     #An ARC solver, we need to disambiguate
     if len(selected_answers) > 1:
+#        print ("MORE than one answer selected")
+#        print ("line_json", line_json)
         qa = (1,"", [choice["text"] for choice in line_json["question"]["choices"]
                                                                    if choice["label"] in selected_answers])
+#        print ("options", qa)
         iselected = disambiguate(qa, args.disambiguator, disambiguators)
-        #pred.append( selected_answers[iselected])
+#        print ("iselected", iselected)
+#        input("NEXT")
         return selected_answers[iselected]
     else:
+#         print ("ONLY one answer selected")
+#         print ("line_json", line_json)
+#         print ("selected_answer", line_json["selected_answers"])
+#         input("NEXT")
         return line_json["selected_answers"]
+    
     
 def _select_negative_answer(line_json):
     
     score = sys.maxsize
     answer = utils.ID_UNANSWERED
     
+
     for choice in line_json["question"]["choices"]:    
-       # print ("exploring negative choice", choice)
         if score > choice["score"]:
             answer = choice["label"]
             score = min(score, choice["score"])
+#            print ("score", score)
+#    print ("answer", answer)
+#    input("NEXT")
     return answer
     
 
-def all_scores_are_zero(line_json):
-    
-
-#     print (line_json)
-#     print (not any([1 for choice in line_json["question"]["choices"] 
-#                 if choice["score"] != 0]))
-#     input("NEXT")
-    return not any([1 for choice in line_json["question"]["choices"] 
-                if choice["score"] != 0])
+# def all_scores_are_zero(line_json):
+#     
+#     return not any([1 for choice in line_json["question"]["choices"] 
+#                 if choice["score"] != 0])
 
 
 def select_answer(line_json, ignore, negative,
                   qclassifier):
     
     if ignore:    
-        if( (qclassifier is not None and qclassifier.is_unanswerable(line_json["question"]["stem"]))
-            or all_scores_are_zero(line_json)
+        if (qclassifier is not None and qclassifier.is_unanswerable(line_json["question"]["stem"])
             ):
             return utils.ID_UNANSWERED 
         else:
