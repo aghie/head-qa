@@ -141,7 +141,7 @@ We also run the ARC-Solvers used in the ARC challenge (Clark, P., Cowhey, I., Et
 1- Follow the [ARC-solvers README.md instructions](https://github.com/allenai/ARC-Solvers) to create a virtualenv, create the index and download the models and resources:
 
 > NOTE that instead of using their ARC_corpus.txt as the inverted index we used again Wikipedia. If you also want to use Wikipedia you need to do two things:
-1. Make sure you have download our [Wikipedia corpus]() in txt format.
+1. Make sure you have downloaded our [Wikipedia corpus](http://www.grupolys.org/software/head-qa-acl2019/WikiCorpus.zip) in txt format.
 2. Modify the file ARC-Solvers/scripts/download_data.sh and change the argument specifying the corpus ARC_corpus.txt to the path where you have stored the Wikipedia corpus.
 
 >NOTE 2 ARC-Solvers need of elasticsearch 6+ to download the data. Download it and to run it execute.
