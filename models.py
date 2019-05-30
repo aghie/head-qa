@@ -442,12 +442,6 @@ class DrQAAnswerer(Answerer):
         #Compare which answer is the closest one to the DrQA answers
         assert (len(drqa_answers) == len(qas))
         for pred_answer, (qid,question,answers) in zip(drqa_answers, qas):
-#             if self.qclassifier.is_negation_question(question):
-#                 best_answer, best_score = 0, 100000000
-#                 f = min     
-#             else:
-#                 best_answer, best_score = 0,0
-#                 f = max
             similarities = sorted([(idanswer, self.ts.similarity(pred_answer.split(" "), answer.split(" "))) 
                                    for idanswer,answer in enumerate(answers,1)], 
                                    key= lambda x : x[1], reverse=True)
@@ -455,12 +449,9 @@ class DrQAAnswerer(Answerer):
             #No question scored We select the longest answer instead
             if similarities[0][1] == 0:
                 length_answers = [(ida,len(a)) for ida, a in enumerate(answers,1)]
-           #     print ("length answers before", length_answers)
                 length_answers = sorted(length_answers, key = lambda a: a[1], reverse=True)
-           #     print ("length answers after", length_answers)
-                preds[qid] = length_answers[0][0] #random.randint(1,len(answers))
-           #     print ("selected answer", preds[qid])
-           #     input("NEXT")
+                preds[qid] = length_answers[0][0] 
+
             else:
                 if self.qclassifier.is_negation_question(question):
                     preds[qid] = similarities[-1][0] 

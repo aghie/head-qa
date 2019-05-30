@@ -34,7 +34,6 @@ if __name__ == '__main__':
     
     if config["lang"].lower() == SPANISH:
         tfidf_retriever = config["es_retriever"]
-      #  output_dir = config["es_output"]
         path_head =config["es_head"]
     
         unanswerable_sentences = [utils.BOS_IMAGE_QUESTION_ES]
@@ -44,7 +43,6 @@ if __name__ == '__main__':
         
     elif config["lang"].lower() == ENGLISH:
         tfidf_retriever = config["en_retriever"]
-      #  output_dir = config["en_output"]
         path_head =config["en_head"]
         unanswerable_sentences = [utils.BOS_IMAGE_QUESTION_EN]
         neg_words = utils.NEGATION_WORDS_EN
@@ -107,7 +105,6 @@ if __name__ == '__main__':
         n_exams = len(dataset.get_exams())
         for exam in tqdm(dataset.get_exams()):
             qas = dataset.get_qas(exam)
-           # print ("Answerer", answerer, "processing",  exam)
             preds = answerer.predict(qas)
             predictions[answerer.name()][exam] = preds  
              

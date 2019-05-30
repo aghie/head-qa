@@ -133,6 +133,8 @@ if __name__ == '__main__':
                             help="To ignore questions according to the strategy described in the paper", action="store_true")
     arg_parser.add_argument("--negative_questions", dest="negative_questions",
                             help="It deals with negative questions", action="store_true")
+    arg_parser.add_argument("--path_eval",
+                            help="Path to head-qa/eval.py")
     args = arg_parser.parse_args()
 
     results_files = [args.arc_results+os.sep+file 
@@ -197,7 +199,8 @@ if __name__ == '__main__':
                                             for qid in d_pred[exam] ]))
                 
                 
-                command = ["python","../eval.py","--gold",gold_file,"--predicted",pred_file]
+                command = ["python",args.path_eval,"--gold",gold_file,"--predicted",pred_file]
+               # command = ["python","../eval.py","--gold",gold_file,"--predicted",pred_file]
                 p = subprocess.Popen(" ".join(command), stdout=subprocess.PIPE, shell=True)
                 out, err = p.communicate()
                 exam_scores = scorer.parse_eval(out.decode("utf-8"))
@@ -214,7 +217,7 @@ if __name__ == '__main__':
             with open(pred_file,"w") as f_pred:      
                 f_pred.write("\n".join( [id+"\t"+p for id, p in zip(ids,pred) ]))
             
-            command = ["python","../eval.py","--gold",gold_file,"--predicted",pred_file]
+            command = ["python",args.path_eval,"--gold",gold_file,"--predicted",pred_file]
             p = subprocess.Popen(" ".join(command), stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate()
     

@@ -1,15 +1,33 @@
-pip install sklearn
+################################################
+# For the control, IR and DrQA methods
+################################################
+
 #Read additional instructions to install DrQA at https://github.com/facebookresearch/DrQA
-#cd DrQA; pip install -r requirements.txt; python setup.py develop
-pip install torch==0.3.1
+#For the most recent version cline instead #https://github.com/facebookresearch/DrQA.git
+git clone https://github.com/aghie/DrQA.git 
+cd DrQA; pip install -r requirements.txt; python setup.py develop
+./install_corenlp.sh
+./download.sh
+
+pip install scikit-learn==0.20.2
+pip install numpy==1.16.0
+pip install torch==1.0.0
 pip install torchvision
-#I was habing problems running drqa/pipeline/predict.py
-#It seems it is due to a problem with the CoreNLP tokenizer
 pip install spacy==2.0.0
 
-#See for a more detailed explanation of the following steps https://github.com/allenai/ARC-Solvers
-#Clone git clone https://github.com/allenai/ARC-Solvers
-#sh scripts/install_requirements.sh
-#sh scripts/download_data.sh
-#sh scripts/download_and_prepare_glove.sh
-#I had problems to run the dgem baseline. The default torch version that is installed if you follow the instructions in the README.md is the 0.4.1. To make them work I needed to install torch 0.3.1 instead
+python -m spacy download en
+python -m spacy download es
+
+wget http://www.grupolys.org/software/head-qa-acl2019/HEAD.zip
+wget http://www.grupolys.org/software/head-qa-acl2019/HEAD_EN.zip
+wget http://www.grupolys.org/software/head-qa-acl2019/data.zip
+wget http://www.grupolys.org/software/head-qa-acl2019/wiki-articles.tfidf.zip
+wget http://www.grupolys.org/software/head-qa-acl2019/WikiCorpus.zip
+
+unzip HEAD.zip
+unzip HEAD_EN.zip
+unzip data.zip
+mkdir wikipedia
+unzip wiki-articles.tfidf.zip -d wikipedia/
+unzip WikiCorpus.zip -d wikipedia/
+
