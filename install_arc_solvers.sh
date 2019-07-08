@@ -1,4 +1,4 @@
-https://github.com/aghie/ARC-Solvers.git
+#https://github.com/aghie/ARC-Solvers.git
 
 pip install allennlp==0.2.1
 pip install torch==0.3.1
