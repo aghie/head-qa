@@ -188,6 +188,10 @@ by
 
 We also had problems ruuning the dgem baseline. The default torch version that is installed if you follow the instructions in the ARC-solvers README.md is the 0.4.1. To make them work we needed to install torch 0.3.1 instead.
 
+## Acknowledgements
+
+This work has received funding from the European Research Council (ERC), under the European Union's Horizon 2020 research and innovation programme (FASTPARSE, grant agreement No 714150).
+
 ### References
 
 Vilares, David and Gómez-Rodríguez, Carlos. "HEAD-QA: A Healthcare Dataset for Complex Reasoning", to appear, ACL 2019.
