@@ -77,6 +77,8 @@ In this work we used the following Wikipedia dumps:
 - Spanish: [eswiki-20180620-pages-articles.xml.bz2](http://www.grupolys.org/software/head-qa-acl2019/eswiki-20180620-pages-articles.xml.bz2)
 - English: [enwiki-20180701-pages-articles.xml.bz2](http://www.grupolys.org/software/head-qa-acl2019/enwiki-20180701-pages-articles.xml.bz2)
 
+Alternative, you can try to use the current Wikipedia dump maintained by https://dumps.wikimedia.org/
+
 ```
 PYTHONPATH="$HOME/git/wikiextractor" python $HOME/git/wikiextractor/WikiExtractor.py $PATH_WIKIPEDIA_DUMP -o $PATH_WIKI_JSON --json
 PYTHONPATH="$HOME/git/DrQA/" python $HOME/git/DrQA/scripts/retriever/build_db.py $PATH_WIKI_JSON $PATH_DB
