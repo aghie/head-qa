@@ -74,8 +74,8 @@ IR and DrQA require to create an inverted index in advance. This is done using [
 
 In this work we used the following Wikipedia dumps:
 
-- Spanish: eswiki-20180620-pages-articles.xml.bz2
-- English: enwiki-20180701-pages-articles.xml.bz2
+- Spanish: [eswiki-20180620-pages-articles.xml.bz2](http://www.grupolys.org/software/head-qa-acl2019/eswiki-20180620-pages-articles.xml.bz2)
+- English: [enwiki-20180701-pages-articles.xml.bz2](http://www.grupolys.org/software/head-qa-acl2019/enwiki-20180701-pages-articles.xml.bz2)
 
 ```
 PYTHONPATH="$HOME/git/wikiextractor" python $HOME/git/wikiextractor/WikiExtractor.py $PATH_WIKIPEDIA_DUMP -o $PATH_WIKI_JSON --json
