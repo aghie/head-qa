@@ -66,8 +66,7 @@ HEAD-QA tries to make these questions accesible for the Natural Language Process
 | [IR Baseline - Vilares and Gómez-Rodríguez (2019)](https://www.aclweb.org/anthology/P19-1092/) | 37.2 | 111.8 |
 
 
-</br>
-</br>
+# Leaderboard (per healthcare discipline)
 
 #### Performance for each healthcare discipline on the unsupervised setting
 
